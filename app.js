@@ -32,6 +32,7 @@
   if (!rep) return;
   var raw; try { raw = sessionStorage.getItem(KEY); } catch (e) {}
   if (!raw) return;
+  var hd = document.querySelector(".fl-head"); if (hd) { hd.querySelector("h1").textContent = "Your Brand Diagnostic"; hd.querySelector("p").textContent = "Written by AI from your answers. Test mode: no payment is taken."; }
   var keep = [rep.querySelector(".reach"), rep.querySelector(".upsell")];
   var box = document.createElement("div");
   box.innerHTML = '<header><h2>Writing your Brand Diagnostic...</h2><p class="fine">This takes about 20 seconds. Please keep this page open.</p></header>';
