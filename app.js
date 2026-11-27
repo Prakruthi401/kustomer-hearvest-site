@@ -27,12 +27,23 @@
       try { sessionStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
     });
   }
+  // Step 2: pay page
+  var paid = document.getElementById("khpaid");
+  if (paid) {
+    paid.addEventListener("click", function (e) {
+      var t = document.getElementById("khtxn").value.replace(/\s/g, ""), m = document.getElementById("khemail").value.trim(), er = document.getElementById("kherr");
+      var msg = !/^[A-Za-z0-9]{8,30}$/.test(t) ? "Please enter the UPI transaction ID from your payment (8 to 30 letters or numbers)." : !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m) ? "Please enter a valid email." : "";
+      if (msg) { e.preventDefault(); er.textContent = msg; return; }
+      try { sessionStorage.setItem("kh_pay", JSON.stringify({ txn: t, email: m })); } catch (x) {}
+    });
+  }
   // Step 3: build the real report
   var rep = document.querySelector("article.report");
   if (!rep) return;
-  var raw; try { raw = sessionStorage.getItem(KEY); } catch (e) {}
-  if (!raw) return;
-  var hd = document.querySelector(".fl-head"); if (hd) { hd.querySelector("h1").textContent = "Your Brand Diagnostic"; hd.querySelector("p").textContent = "Written by AI from your answers. Test mode: no payment is taken."; }
+  var raw, pay; try { raw = sessionStorage.getItem(KEY); pay = JSON.parse(sessionStorage.getItem("kh_pay") || "null"); } catch (e) {}
+  if (!raw || !pay) { var hd0 = document.querySelector(".fl-head"); if (hd0) { hd0.querySelector("h1").textContent = "Your report is not ready"; hd0.querySelector("p").textContent = "Please fill the form and pay first."; } rep.innerHTML = '<header><a class="btn btn-red" href="diagnostic.html">Start here</a></header>'; return; }
+  try { var o = JSON.parse(raw); o.txn = pay.txn; o.email = pay.email; raw = JSON.stringify(o); } catch (e) {}
+  var hd = document.querySelector(".fl-head"); if (hd) { hd.querySelector("h1").textContent = "Your Brand Diagnostic"; hd.querySelector("p").textContent = "Written by AI from your answers. Not checked by a person."; }
   var keep = [rep.querySelector(".reach"), rep.querySelector(".upsell")];
   var box = document.createElement("div");
   box.innerHTML = '<header><h2>Writing your Brand Diagnostic...</h2><p class="fine">This takes about 20 seconds. Please keep this page open.</p></header>';
@@ -41,13 +52,13 @@
   fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: raw })
     .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
     .then(function (x) {
-      if (!x.ok) { done('<header><h2>We could not write your report just now</h2><p>' + esc(x.j.error || "Please try again in a few minutes.") + '</p><a class="btn btn-red" href="diagnostic.html">Back to the form</a></header>'); return; }
+      if (!x.ok) { done('<header><h2>We could not write your report just now</h2><p>' + esc(x.j.error || "Please try again in a few minutes.") + '</p><a class="btn btn-red" href="checkout.html">Back to payment</a></header>'); return; }
       var d = x.j, sc = d.scores || {};
       var names = { product: "Product", brand: "Brand", pricing: "Price", reach: "Reach", trust: "Trust", differentiation: "Stands out" };
       var li = function (a) { return (a || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join(""); };
       var comps = (d.competitors || []).map(function (c) { return '<div class="cmp"><b>' + esc(c.type) + "</b><small>" + esc(c.how_you_stand_out) + "</small></div>"; }).join("");
       done(
-        '<header><span class="eg">AI-written from your answers</span><h2>Your Brand Diagnostic</h2><p class="fine">Test mode: no payment was checked.</p></header>' +
+        '<header><span class="eg">AI-written from your answers</span><h2>Your Brand Diagnostic</h2><p class="fine">We will match your payment ID. Keep this page open or save a screenshot.</p></header>' +
         '<div class="verdict"><span class="tag">Verdict</span><p>' + esc(d.verdict) + "</p></div>" +
         '<div class="planbox"><span class="tag">Your actual problem</span><p>' + esc(d.actual_problem) + "</p></div>" +
         '<div class="rwgrid"><div><h3 class="rh">Doing right</h3><ul class="rw good">' + li(d.doing_right) + '</ul></div><div><h3 class="rh">Doing wrong</h3><ul class="rw bad">' + li(d.doing_wrong) + "</ul></div></div>" +
