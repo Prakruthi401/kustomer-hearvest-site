@@ -21,6 +21,7 @@
 <h2>Leave your details</h2>
 <label class="fld"><span class="lab">Your name <b>*</b></span><input type="text" name="name" maxlength="80" placeholder="Full name"></label>
 <label class="fld"><span class="lab">Email <b>*</b></span><input type="email" name="email" maxlength="120" placeholder="you@example.com"></label>
+<label class="fld"><span class="lab">Phone number <b>*</b></span><input type="tel" name="phone" maxlength="20" placeholder="+91 ..."></label>
 <label class="fld"><span class="lab">What are you building? <b>*</b></span><textarea name="msg" rows="4" maxlength="600" placeholder="Brand name, what you sell, and the one question you most want answered"></textarea></label>
 <p class="fine" id="leadmsg" role="status"></p>
 <button class="btn btn-red" type="submit" id="leadbtn">Send my details</button>
@@ -36,8 +37,8 @@
 (function(){
 var f=document.getElementById("lead"),m=document.getElementById("leadmsg"),btn=document.getElementById("leadbtn");
 f.addEventListener("submit",function(e){e.preventDefault();
-var d={name:f.name.value.trim(),email:f.email.value.trim(),msg:f.msg.value.trim()};
-if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)||d.msg.length<3){m.textContent="Please fill in your name, a valid email and a line about your brand.";return;}
+var d={name:f.name.value.trim(),email:f.email.value.trim(),phone:f.phone.value.trim(),msg:f.msg.value.trim()};
+if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)||d.phone.replace(/\D/g,"").length<8||d.msg.length<3){m.textContent="Please fill in your name, a valid email, your phone number and a line about your brand.";return;}
 btn.disabled=true;m.textContent="Sending...";
 fetch("https://kustomer-hearvest-api.prakruthigowda2005.workers.dev/lead",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(d)})
 .then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
