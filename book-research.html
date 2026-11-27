@@ -14,27 +14,37 @@
   <nav><a href="index.html#plans" data-go="home" data-anchor="plans">Pricing</a><a class="pill" href="diagnostic.html" data-go="diagnostic">Start</a></nav>
 </header>
 <main class="flow">
-<section class="fl-head"><span class="badge badge-r">Real Customer Research &middot; Rs 1,599</span><h1>Book Real Customer Research</h1>
-<p>About 10 real calls with buyers of food and snacks like yours, and a short report in about 5 to 7 days.</p></section>
+<section class="fl-head"><span class="badge badge-r">Real Customer Research</span><h1>Talk to us about Real Customer Research</h1>
+<p>About 10 real calls with buyers of food and snacks like yours, and a short report in about 5 to 7 days. No payment on this page. Leave your details and we will contact you, or email us.</p></section>
 <div class="split">
-<form class="formcard" onsubmit="return false">
-<h2>About your brand</h2>
-<div class="row2"><label class="fld"><span class="lab">Your name <b>*</b></span><input type="text" name="name" placeholder="Full name"></label><label class="fld"><span class="lab">WhatsApp number <b>*</b></span><input type="tel" name="phone" placeholder="+91 ..."></label></div>
-<label class="fld"><span class="lab">Email <b>*</b></span><input type="email" name="email" placeholder="you@example.com"></label><label class="fld"><span class="lab">Brand name <b>*</b></span><input type="text" name="brand" placeholder=""></label><label class="fld"><span class="lab">Product page link</span><input type="url" name="url" placeholder=""></label>
-<label class="fld"><span class="lab">The one question you most want answered</span><textarea name="q" rows="4" placeholder="e.g. Why do customers not order a second time?"></textarea></label>
-<label class="fld"><span class="lab">Language for customer calls</span><select><option>English</option><option>Kannada</option><option>Hindi</option><option>Not sure</option></select></label>
-<label class="chk"><input type="checkbox"><span>I can share a few past customers to call, or I want you to find buyers [to decide].</span></label>
+<form class="formcard" id="lead">
+<h2>Leave your details</h2>
+<label class="fld"><span class="lab">Your name <b>*</b></span><input type="text" name="name" maxlength="80" placeholder="Full name"></label>
+<label class="fld"><span class="lab">Email <b>*</b></span><input type="email" name="email" maxlength="120" placeholder="you@example.com"></label>
+<label class="fld"><span class="lab">What are you building? <b>*</b></span><textarea name="msg" rows="4" maxlength="600" placeholder="Brand name, what you sell, and the one question you most want answered"></textarea></label>
+<p class="fine" id="leadmsg" role="status"></p>
+<button class="btn btn-red" type="submit" id="leadbtn">Send my details</button>
 </form>
 <section class="formcard">
-<h2>Order summary</h2>
-<div class="sumrow"><div><strong>Real Customer Research</strong><small>About 10 calls, short report, 5 to 7 days</small></div><b>Rs 1,599</b></div>
-<div class="sumrow"><div><strong>Brand Diagnostic credit</strong><small>If you bought one [window to decide]</small></div><b>- Rs 19</b></div>
-<div class="sumrow tot"><div><strong>Total</strong><small>Fees and taxes: [to confirm]</small></div><b>Rs 1,580</b></div>
-<span class="btn btn-disabled">Pay (payment provider not connected yet)</span>
-<ul class="trust"><li>Payment handled by [provider name]. We never store card or UPI details.</li><li>Pay now, or after we confirm scope on WhatsApp: [decision pending].</li><li>Refund policy: [to be written].</li></ul>
+<h2>Or email us</h2>
+<p>Write to <a href="mailto:kustomerhearvest@gmail.com">kustomerhearvest@gmail.com</a> and we will reply.</p>
+<ul class="trust"><li>About 10 real calls, short report, 5 to 7 days.</li><li>We contact you first and agree the scope with you.</li><li>No payment is taken on this site for this plan.</li></ul>
 </section>
 </div>
 </main>
+<script>
+(function(){
+var f=document.getElementById("lead"),m=document.getElementById("leadmsg"),btn=document.getElementById("leadbtn");
+f.addEventListener("submit",function(e){e.preventDefault();
+var d={name:f.name.value.trim(),email:f.email.value.trim(),msg:f.msg.value.trim()};
+if(!d.name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)||d.msg.length<3){m.textContent="Please fill in your name, a valid email and a line about your brand.";return;}
+btn.disabled=true;m.textContent="Sending...";
+fetch("https://kustomer-hearvest-api.prakruthigowda2005.workers.dev/lead",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(d)})
+.then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+.then(function(x){if(x.ok){f.innerHTML="<h2>Thanks, we have your details.</h2><p>We will email you soon. You can also write to kustomerhearvest@gmail.com.</p>";}else{btn.disabled=false;m.textContent=x.j.error||"Could not send. Please email kustomerhearvest@gmail.com.";}})
+.catch(function(){btn.disabled=false;m.textContent="Could not send. Please email kustomerhearvest@gmail.com.";});
+});})();
+</script>
 <p class="contactline">Questions or need help? Contact us at <a href="mailto:kustomerhearvest@gmail.com">kustomerhearvest@gmail.com</a></p>
 <footer class="foot dark-foot"><a href="policies.html" style="color:inherit">Prices, delivery and refunds</a> | Contact: kustomerhearvest@gmail.com</footer>
 </body>
